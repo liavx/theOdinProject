@@ -19,6 +19,7 @@ function getHumanChoice() {
     if (userMove == "paper" || userMove == "rock" || userMove == "scissor" ){
         return userMove;
     }else{
+        console.log ("You enter a wrong value, please enter Rock, Scissor or Paper")
         continue;
     }
 }
@@ -45,7 +46,7 @@ humanScore = 0;
 computerScore = 0;
 for (let i = 0 ; i <5 ; i ++){
 playRound(getHumanChoice(),getComputerChoice());
-console.log(humanScore,computerScore);
+console.log(`Current Score - You: ${humanScore}, Computer: ${computerScore}\n`);
 }
 printWinner(humanScore,computerScore);
 }
