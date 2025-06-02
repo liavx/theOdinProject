@@ -20,10 +20,22 @@ function operate(operator, a, b) {
     default: throw new Error("Invalid operator");
   }
 }
-
+let pressTimer;
+const clearButton = document.querySelector(".clear");
 const DISPLAY = document.querySelector(".display");
 let EXPRESSION = '';
 let MEMORY = { operand1: null, operator: null, result: null, calculated: false };
+
+const handleBackspace = () => {
+  if (DISPLAY.textContent.length > 1) {
+    DISPLAY.textContent = DISPLAY.textContent.slice(0, -1);
+    EXPRESSION = EXPRESSION.slice(0, -1);
+  } else {
+    DISPLAY.textContent = '0';
+    EXPRESSION = '';
+  }
+};
+
 
 const handleClear = () => {
   DISPLAY.textContent = '0';
@@ -121,15 +133,32 @@ const handleDecimalInput = () => {
   }
 };
 
+const flashButton = (button) => {
+  button.classList.add("pressed");
+  setTimeout(() => button.classList.remove("pressed"), 100);
+};
+
+
+const handleToggleSign = () => {
+  const match = DISPLAY.textContent.match(/-?\d+\.?\d*$/);
+  if (match) {
+    const number = match[0]; // Use [0], not [1]
+    const toggled = number.startsWith('-') ? number.slice(1) : '-' + number;
+    DISPLAY.textContent = DISPLAY.textContent.replace(/-?\d+\.?\d*$/, toggled);
+    EXPRESSION = EXPRESSION.replace(/-?\d+\.?\d*$/, toggled);
+  }
+};
+
 document.querySelectorAll("button").forEach((button) => {
   button.addEventListener("click", (e) => {
     const text = e.target.textContent;
-
     if (DISPLAY.textContent.match(/Error|NaN|Division/i)) {
       handleClear();
     }
-
-    if (e.target.classList.contains("operand")) {
+    if (text === "-/+") {
+      handleToggleSign();
+    } 
+      else if (e.target.classList.contains("operand")) {
       handleValueInput(text);
     } else if (e.target.classList.contains("decimal")) {
       handleDecimalInput();
@@ -137,9 +166,18 @@ document.querySelectorAll("button").forEach((button) => {
       handleOperatorInput(text);
     } else if (e.target.classList.contains("equal")) {
       handleEqualInput();
-    } else if (e.target.classList.contains("clear")) {
-      handleClear();
     }
+    flashButton(e.target);
   });
 });
+
+clearButton.addEventListener("mousedown", () => {
+  pressTimer = setTimeout(handleClear, 500);
+});
+
+clearButton.addEventListener("mouseup", () => {
+  clearTimeout(pressTimer);
+  if (!MEMORY.calculated) handleBackspace();
+});
+
 

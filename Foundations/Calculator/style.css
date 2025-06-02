@@ -40,8 +40,17 @@ button {
     color: inherit; 
     background-color: #212121;
     cursor: pointer;
+    transition: all 0.1s ease-in-out;
 }
+button:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  }
 
+  button.pressed {
+    box-shadow: 0 0 8px white;
+  }
+  
 .operator,
 .equal{
     background-color: #FF8C00;
