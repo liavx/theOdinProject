@@ -78,16 +78,25 @@ const evaluateExpression = (expr) => {
   expr = parseSqrt(expr);
   const tokens = expr.match(/(-?\d+\.?\d*|\+|\-|\*|\/|%)/g);
   if (!tokens) throw new Error("Invalid expression");
+  const values = [...tokens];
 
-  let result = parseFloat(tokens[0]);
+  const applyOrder = (ops) => {
+    for (let i= 0 ; i < values.length ; i++){
+      if(ops.includes(values[i])){
+      const a = parseFloat(values[i-1]);
+      const b = parseFloat(values[i+1]);
+      const result = operate(values[i],a,b);
+      values.splice(i-1,3,result.toString())
+      i-=1;
+      }
+    }
 
-  for (let i = 1; i < tokens.length; i += 2) {
-    const operator = tokens[i];
-    const number = parseFloat(tokens[i + 1]);
-    result = operate(operator, result, number);
   }
+  applyOrder(["*","/","%"]);
+  applyOrder(["+","-"]);
+  
 
-  return result;
+  return parseFloat(values[0]);
 };
 
 const handleEqualInput = () => {
